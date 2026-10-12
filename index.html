@@ -119,6 +119,18 @@ textarea#raw:focus{outline:none}
 .run{font-family:var(--f-mono); font-size:12.5px; padding:8px 14px; border-radius:8px; border:0; background:var(--accent); color:var(--accent-ink); cursor:pointer; font-weight:500}
 .fine{font-size:12.5px; color:var(--muted); margin:12px 2px 0; max-width:62ch}
 
+.pane.real{background:color-mix(in srgb, var(--accent) 5%, var(--surface))}
+.foot-actions{display:flex; align-items:center; gap:12px}
+.engine{display:inline-flex; align-items:center; gap:8px; font-family:var(--f-mono); font-size:12px; cursor:pointer; user-select:none}
+.engine input{position:absolute; opacity:0; width:1px; height:1px}
+.engine .sw{width:32px; height:18px; border-radius:999px; background:var(--line); position:relative; transition:background .2s; flex:none}
+.engine .sw::after{content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:var(--fg); transition:transform .2s}
+.engine input:checked + .sw{background:var(--accent)}
+.engine input:checked + .sw::after{transform:translateX(14px); background:var(--accent-ink)}
+.engine input:focus-visible + .sw{outline:2px solid var(--accent); outline-offset:2px}
+.blocked{display:block; padding:10px 12px; border-radius:8px; border:1px solid var(--e-id); color:var(--e-id); font-weight:500}
+.miss{color:var(--muted)}
+
 /* At a glance */
 .glance{border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
 .glance-in{display:grid; grid-template-columns:repeat(5, minmax(0,1fr))}
@@ -215,6 +227,35 @@ h3{font-family:var(--f-display); font-weight:600; letter-spacing:-.02em; margin:
 .links a{font-family:var(--f-mono); font-size:13px; text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:2px; transition:border-color .2s, color .2s}
 .links a:hover{border-color:var(--accent); color:var(--accent)}
 .note{font-size:13px; color:var(--muted); margin-top:16px; font-style:italic}
+
+/* Replay */
+.replay{display:grid; grid-template-columns:minmax(220px,.75fr) minmax(0,2fr); gap:clamp(20px,3vw,36px); align-items:start}
+@media (max-width:900px){ .replay{grid-template-columns:1fr} }
+.st-list{list-style:none; margin:0; padding:0; display:grid; gap:4px; counter-reset:none}
+@media (max-width:900px){ .st-list{display:flex; overflow-x:auto; gap:6px; padding-bottom:6px} .st-list li{flex:none} .st-btn span:last-child{display:none} }
+.st-btn{width:100%; display:flex; gap:12px; align-items:baseline; text-align:left; padding:10px 12px; border-radius:10px; border:1px solid transparent; background:transparent; color:var(--muted); font:inherit; font-size:15px; cursor:pointer; transition:background .2s, color .2s, border-color .2s}
+.st-btn:hover{color:var(--fg)}
+.st-btn[aria-current="step"]{background:var(--surface); border-color:var(--line); color:var(--fg)}
+.st-n{font-family:var(--f-mono); font-size:12px; color:var(--accent)}
+.st-stage{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:clamp(20px,3vw,32px); min-width:0}
+.st-panel h3{font-size:clamp(24px,2.8vw,34px); margin:6px 0 10px; text-wrap:balance}
+.st-panel{animation:fadein .35s ease both}
+@keyframes fadein{from{opacity:.3; transform:translateY(6px)}to{opacity:1; transform:none}}
+.st-lede{color:var(--muted); margin:0 0 20px; max-width:62ch}
+.arts{display:grid; gap:12px}
+.art{border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--bg); min-width:0}
+.art .label{display:block; margin-bottom:8px}
+.art-body{font-family:var(--f-mono); font-size:13px; line-height:1.85; word-break:break-word}
+.art-body code{display:block; padding:6px 10px; margin:0 0 6px; border-radius:6px; background:var(--surface-2); overflow-x:auto; white-space:pre}
+.art-note{font-family:var(--f-body); font-size:13.5px; color:var(--muted); margin:8px 0 0}
+.leak{background:color-mix(in srgb, var(--e-id) 22%, transparent); color:var(--fg); box-shadow:inset 0 -2px 0 var(--e-id); border-radius:3px; padding:0 2px}
+.kv{display:flex; flex-wrap:wrap; gap:6px 16px; padding:4px 0}
+.kv b{color:var(--e-id)} .kv span{color:var(--muted)}
+.verdict{font-family:var(--f-body); font-size:13.5px; color:var(--muted); margin:8px 0 0}
+.verdict .pill{margin-right:6px; border-color:var(--e-contact); color:var(--e-contact)}
+.st-controls{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:22px; padding-top:18px; border-top:1px solid var(--line)}
+.st-bar{flex:1 1 120px; height:3px; border-radius:3px; background:var(--line); overflow:hidden; min-width:80px}
+.st-bar i{display:block; height:100%; width:14%; background:var(--accent); transition:width .35s}
 
 /* Benchmark */
 .bench{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:clamp(28px,5vw,72px); align-items:center}
@@ -338,23 +379,30 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
         <div class="console" aria-label="Live redaction demo">
           <div class="console-top">
             <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span class="label">redact.live · regex tier</span>
+            <span class="label" id="consoleTitle">redact.live · regex tier</span>
             <span class="label" id="lat">0.0 ms</span>
           </div>
           <div class="pane">
             <label class="label" for="raw"><span>Input · edit me</span><span>untrusted</span></label>
-            <textarea id="raw" spellcheck="false">Hi, this is Maria Lopez. Please refill the lisinopril for patient Daniel Okafor (DOB 04/12/1987, MRN 88213045). Call me at (561) 555-0142 or maria.lopez@example.com. Card on file: 4111 1111 1111 1111, SSN 123-45-6789.</textarea>
+            <textarea id="raw" spellcheck="false">Hi, I'm Maria Gonzalez. My husband daniel okafor filed it. Adjuster ADJ#77-1043 said the claim is pending. Call (415) 555-0134 or email maria.g@example.com. Card on file: 4111 1111 1111 1111.</textarea>
           </div>
           <div class="pane">
-            <div class="label"><span>Output · safe to send to a model</span><span id="count">0 entities</span></div>
+            <div class="label"><span id="outLabel">Output · safe to send to a model</span><span id="count">0 entities</span></div>
             <div class="out" id="out" aria-live="polite"></div>
+          </div>
+          <div class="pane real" id="realPane" hidden>
+            <div class="label"><span>AgentShield engine · Presidio + learned rules</span><span id="count2"></span></div>
+            <div class="out" id="out2" aria-live="polite"></div>
           </div>
           <div class="console-foot">
             <div class="log" id="log"><span>waiting for input</span></div>
-            <button class="run" id="run" type="button">Redact ▸</button>
+            <div class="foot-actions">
+              <label class="engine" id="engineWrap" hidden><input type="checkbox" id="engineToggle"><span class="sw" aria-hidden="true"></span><span>Real engine</span></label>
+              <button class="run" id="run" type="button">Redact ▸</button>
+            </div>
           </div>
         </div>
-        <p class="fine">Runs entirely in your browser, so nothing you type leaves this page. A toy version of the regex tier; production adds Presidio, Google DLP, per-industry rule bundles, and an LLM safety net.</p>
+        <p class="fine" id="fine">Runs entirely in your browser, so nothing you type leaves this page. A toy version of the regex tier; production adds Presidio, Google DLP, per-industry rule bundles, and an LLM safety net.</p>
       </div>
     </div>
   </div>
@@ -447,6 +495,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
             <div class="links">
               <a href="https://github.com/Akhilvallala1/agentshield" target="_blank" rel="noopener">Repository ↗</a>
               <a href="https://youtu.be/rxwgwG6DUzY" target="_blank" rel="noopener">Demo video ↗</a>
+              <a href="#loop">Watch the learn/unlearn replay ↓</a>
             </div>
           </div>
         </div></li>
@@ -527,6 +576,30 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
         </div></li>
 
       </ul>
+    </div>
+  </section>
+
+  <section id="loop">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2>Watch AgentShield learn and unlearn</h2>
+          <p class="lede">A replay of a real run. Every message, finding, regex, and verdict below is from the run's recorded outputs, on synthetic data.</p>
+        </div>
+        <span class="label">Recorded replay</span>
+      </div>
+      <div class="replay">
+        <ol class="st-list" id="stList"><li><button type="button" class="st-btn" data-i="0" aria-current="step"><span class="st-n">01</span><span>A message slips through</span></button></li><li><button type="button" class="st-btn" data-i="1" aria-current="false"><span class="st-n">02</span><span>The auditor catches it, off the hot path</span></button></li><li><button type="button" class="st-btn" data-i="2" aria-current="false"><span class="st-n">03</span><span>Each miss becomes a candidate rule</span></button></li><li><button type="button" class="st-btn" data-i="3" aria-current="false"><span class="st-n">04</span><span>Validated, approved, hot-loaded</span></button></li><li><button type="button" class="st-btn" data-i="4" aria-current="false"><span class="st-n">05</span><span>Next time, it holds</span></button></li><li><button type="button" class="st-btn" data-i="5" aria-current="false"><span class="st-n">06</span><span>Then the rule starts misfiring</span></button></li><li><button type="button" class="st-btn" data-i="6" aria-current="false"><span class="st-n">07</span><span>And it unlearns</span></button></li></ol>
+        <div class="st-stage">
+          <div class="st-panel" data-i="0"><span class="label">Step 1 of 7</span><h3>A message slips through</h3><p class="st-lede">Generation 0 runs Presidio only. It catches the name and phone, wrongly tags part of the claim ID as a phone number, and lets the policy number and adjuster badge through. The Claims agent repeats them back.</p><div class="arts"><div class="art "><span class="label">Intake agent sends (synthetic)</span><div class="art-body">Hi, this is Maria Gonzalez. My car was hit in a parking lot. Policy <mark class="leak">INS-AZ-4471-K</mark>. Adjuster <mark class="leak">ADJ#77-1043</mark> came by and said claim CLM-2026-000913 is pending. You can call me at (415) 555-0134.</div></div><div class="art "><span class="label">Claims agent replies (recorded)</span><div class="art-body">Claim CLM-<span class="ent done" data-g="contact">[PHONE #e861]</span> is currently pending under policy <mark class="leak">INS-AZ-4471-K</mark>. Adjuster <mark class="leak">ADJ#77-1043</mark> has been assigned and is handling the review.</div></div></div></div><div class="st-panel" data-i="1" hidden><span class="label">Step 2 of 7</span><h3>The auditor catches it, off the hot path</h3><p class="st-lede">An LLM auditor reviews forwarded traffic after delivery, so it adds no latency. It sees only the shape of each value, never the raw value.</p><div class="arts"><div class="art "><span class="label">Auditor findings (recorded)</span><div class="art-body"><div class="kv"><b>INS-AZ-4471-K</b><span>INSURANCE_POLICY_NUMBER</span><span>confidence 0.99</span></div><div class="kv"><b>ADJ#77-1043</b><span>ADJUSTER_BADGE</span><span>confidence 0.99</span></div></div></div></div></div><div class="st-panel" data-i="2" hidden><span class="label">Step 3 of 7</span><h3>Each miss becomes a candidate rule</h3><p class="st-lede">A synthesizer turns every finding into a compiled regex with its own positive and negative test cases, and retries on validator feedback.</p><div class="arts"><div class="art "><span class="label">Synthesizer drafts (recorded)</span><div class="art-body"><code>\bINS-[A-Z]{2}-\d{4}-[A-Z]\b</code><code>(?&lt;![A-Z0-9-])\bINS-[A-Z]{2}-\d{4}-[A-Z]\b(?![A-Z0-9-])</code><code>(?&lt;![A-Za-z0-9-])\bADJ#\d{2}-\d{4}\b(?![A-Za-z0-9-])</code><p class="art-note">Each draft ships with 8 should-match and 8 to 12 should-not-match examples, such as SKU-INS-AB-1234-C and ADJ#12-3456A.</p></div></div></div></div><div class="st-panel" data-i="3" hidden><span class="label">Step 4 of 7</span><h3>Validated, approved, hot-loaded</h3><p class="st-lede">A rule only goes live after it passes false-positive checks on 500 clean messages and precision/recall on a labeled eval set, and a human approves it. A MongoDB change stream pushes it into the running gateway with no restart.</p><div class="arts"><div class="art "><span class="label">Gateway log</span><div class="art-body"><code>rule … ACTIVE (INSURANCE_POLICY_NUMBER) -&gt; live</code><code>rule … ACTIVE (ADJUSTER_BADGE) -&gt; live</code><p class="art-note">Every approval also writes a new eval generation, so the improvement is measured, not assumed.</p></div></div></div></div><div class="st-panel" data-i="4" hidden><span class="label">Step 5 of 7</span><h3>Next time, it holds</h3><p class="st-lede">The same kind of message now goes through the compiled rule in microseconds. No LLM call on the request path.</p><div class="arts"><div class="art "><span class="label">Claims agent replies (recorded)</span><div class="art-body">Claim CLM-<span class="ent done" data-g="contact">[PHONE #e861]</span> is received and currently pending review. Adjuster <span class="ent done" data-g="id">[ADJUSTER_BADGE #2c5d]</span> has been assigned to the claim.</div></div></div></div><div class="st-panel" data-i="5" hidden><span class="label">Step 6 of 7</span><h3>Then the rule starts misfiring</h3><p class="st-lede">Marketing launches products whose codes look exactly like policy numbers. The live rule tokenizes them, and a hit review judges each match in context.</p><div class="arts"><div class="art "><span class="label">Message from a separate session</span><div class="art-body">New brochure for product INS-TX-0042-A ships Monday to all branches.<p class="verdict"><span class="pill">not personal</span> The matched value is identified as a product reference in a brochure distribution message, not an identifier tied to a person, account, policy, or claim.</p></div></div><div class="art "><span class="label">Message from a separate session</span><div class="art-body">Please add product code INS-FL-0777-D to the spring catalog price list.<p class="verdict"><span class="pill">not personal</span> The value is explicitly described as a product code for a catalog, so it is not tied to a specific person, account, policy, or claim.</p></div></div><div class="art "><span class="label">Message from a separate session</span><div class="art-body">Pricing team approved a 5% discount on the INS-OR-0220-F starter package.<p class="verdict"><span class="pill">not personal</span> The value is described in connection with a starter package discount, indicating a product or package reference rather than a person-, account-, policy-, or claim-specific identifier.</p></div></div><p class="art-note">Plus three more like these, six sessions in all.</p></div></div><div class="st-panel" data-i="6" hidden><span class="label">Step 7 of 7</span><h3>And it unlearns</h3><p class="st-lede">6 of the policy rule&#x27;s 7 live hits were judged not personal. That&#x27;s an 86% false-positive rate, far past the 20% limit, across 5+ hits from 2+ sessions. Retirement is proposed, a human approves, and the rule is demoted to shadow and pulled from the live gateway.</p><div class="arts"><div class="art "><span class="label">Gateway log</span><div class="art-body"><code>rule … now shadow -&gt; removed from live set</code><p class="art-note">This is why the real engine in the console above ships with the badge rule but not the policy rule.</p></div></div></div></div>
+          <div class="st-controls">
+            <button type="button" class="chip" id="stPrev">← Back</button>
+            <button type="button" class="chip" id="stPlay">Play ▸</button>
+            <button type="button" class="chip" id="stNext">Next →</button>
+            <span class="st-bar" aria-hidden="true"><i id="stFill"></i></span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -773,9 +846,75 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
       if(reduce) go(); else timers.push(setTimeout(go, 500 + i * 170));
     });
   }
-  document.getElementById('run').addEventListener('click', render);
+  /* ---------- Real engine (AgentShield demo API on Cloud Run) ---------- */
+  var API_URL = '';  // set after deploy, e.g. https://agentshield-demo-xxxx.a.run.app
+  var GROUP = {PERSON:'person', EMAIL:'contact', PHONE:'contact', SSN:'id', CREDIT_CARD:'finance', ADJUSTER_BADGE:'id'};
+  var out2 = document.getElementById('out2'), count2 = document.getElementById('count2');
+  var realPane = document.getElementById('realPane'), engineWrap = document.getElementById('engineWrap');
+  var engineToggle = document.getElementById('engineToggle'), fine = document.getElementById('fine');
+  var outLabel = document.getElementById('outLabel');
+  var FINE_LOCAL = fine.textContent;
+  var FINE_REMOTE = 'With the real engine on, your text is also sent to my AgentShield demo server on Google Cloud. It runs the same fast path as the gateway (learned rules + Presidio), keeps nothing, and logs nothing. Max 2,000 characters.';
+  var engineCtl = null;
+
+  function renderTokens(el, text){
+    el.innerHTML = '';
+    var parts = text.split(/(<<[A-Z_]+_[0-9a-f]{8}>>)/);
+    parts.forEach(function(part){
+      var m = /^<<([A-Z_]+)_([0-9a-f]{8})>>$/.exec(part);
+      if(!m){ el.appendChild(document.createTextNode(part)); return; }
+      var s = document.createElement('span');
+      s.className = 'ent done'; s.dataset.g = GROUP[m[1]] || 'id';
+      s.textContent = '[' + m[1] + ' #' + m[2].slice(0,4) + ']';
+      s.title = 'Reversible token ' + part;
+      el.appendChild(s);
+    });
+  }
+  function runEngine(){
+    if(!API_URL || !engineToggle.checked) return;
+    if(engineCtl) engineCtl.abort();
+    engineCtl = new AbortController();
+    var text = raw.value.slice(0, 2000);
+    if(!text.trim()){ out2.textContent = ''; count2.textContent = ''; return; }
+    out2.innerHTML = '<span class="miss">Running on AgentShield...</span>';
+    fetch(API_URL + '/redact', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({text:text}), signal: engineCtl.signal})
+      .then(function(r){
+        if(r.status === 429) throw new Error('rate');
+        if(!r.ok) throw new Error('http');
+        return r.json();
+      })
+      .then(function(j){
+        if(j.blocked){
+          out2.innerHTML = '';
+          var b = document.createElement('span'); b.className = 'blocked';
+          b.textContent = 'Blocked. The playbook stops any message containing ' + j.blocked_types.join(', ') + ' before it reaches the next agent.';
+          out2.appendChild(b);
+        } else { renderTokens(out2, j.output); }
+        var learned = j.detections.filter(function(d){ return d.layer === 'L1'; }).length;
+        count2.textContent = j.detections.length + (j.detections.length === 1 ? ' entity' : ' entities') + ' · ' + j.latency_ms + ' ms' + (learned ? ' · ' + learned + ' learned' : '');
+      })
+      .catch(function(e){
+        if(e && e.name === 'AbortError') return;
+        out2.innerHTML = '<span class="miss">' + (e && e.message === 'rate' ? 'Too many requests. Try again in a minute.' : 'The engine is unreachable right now. The browser tier above still works.') + '</span>';
+        count2.textContent = '';
+      });
+  }
+  function setEngine(on){
+    realPane.hidden = !on;
+    fine.textContent = on ? FINE_REMOTE : FINE_LOCAL;
+    outLabel.textContent = on ? 'Regex tier · in your browser' : 'Output · safe to send to a model';
+    document.getElementById('consoleTitle').textContent = on ? 'redact.live · regex vs agentshield' : 'redact.live · regex tier';
+    if(on) runEngine();
+  }
+  engineToggle.addEventListener('change', function(){ setEngine(engineToggle.checked); });
+  if(API_URL){
+    var hc = new AbortController(); setTimeout(function(){ hc.abort(); }, 5000);
+    fetch(API_URL + '/healthz', {signal: hc.signal}).then(function(r){ if(r.ok) engineWrap.hidden = false; }).catch(function(){});
+  }
+
+  document.getElementById('run').addEventListener('click', function(){ render(); runEngine(); });
   var deb;
-  raw.addEventListener('input', function(){ clearTimeout(deb); deb = setTimeout(render, 450); });
+  raw.addEventListener('input', function(){ clearTimeout(deb); deb = setTimeout(function(){ render(); runEngine(); }, 450); });
   render();
 
   /* ---------- Recruiter desk: role fit ---------- */
@@ -937,6 +1076,31 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
       })
       .then(function(){ askBtn.disabled = false; });
   });
+
+  /* ---------- Learn/unlearn replay ---------- */
+  (function(){
+    var btns = Array.prototype.slice.call(document.querySelectorAll('.st-btn'));
+    var panels = Array.prototype.slice.call(document.querySelectorAll('.st-panel'));
+    var fill = document.getElementById('stFill'), play = document.getElementById('stPlay');
+    var cur = 0, timer = null, n = panels.length;
+    function show(i){
+      cur = (i + n) % n;
+      panels.forEach(function(p, k){ p.hidden = k !== cur; });
+      btns.forEach(function(b, k){ b.setAttribute('aria-current', k === cur ? 'step' : 'false'); });
+      fill.style.width = ((cur + 1) / n * 100) + '%';
+    }
+    function stop(){ if(timer){ clearInterval(timer); timer = null; play.textContent = 'Play ▸'; } }
+    btns.forEach(function(b){ b.addEventListener('click', function(){ stop(); show(+b.dataset.i); }); });
+    document.getElementById('stPrev').addEventListener('click', function(){ stop(); show(cur - 1); });
+    document.getElementById('stNext').addEventListener('click', function(){ stop(); show(cur + 1); });
+    play.addEventListener('click', function(){
+      if(timer){ stop(); return; }
+      play.textContent = 'Pause ❚❚';
+      if(cur === n - 1) show(0);
+      timer = setInterval(function(){ if(cur === n - 1){ stop(); return; } show(cur + 1); }, 6500);
+    });
+    show(0);
+  })();
 
   /* ---------- Copy email ---------- */
   var copyBtn = document.getElementById('copy'), toast = document.getElementById('toast'), email = document.getElementById('email');
