@@ -1086,7 +1086,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
   var askWrap = document.getElementById('askWrap'), askForm = document.getElementById('askForm');
   var askInput = document.getElementById('askInput'), askBtn = document.getElementById('askBtn');
   var sample = null, ctl = null, askApi = false;
-  var ASK_URL = '';  // portfolio assistant on Cloud Run; set after deploy
+  var ASK_URL = 'https://portfolio-api-41829231255.us-east1.run.app';  // portfolio assistant on Cloud Run
   var askHint = document.getElementById('askHint');
   function hideAsk(msg){ askWrap.hidden = true; if(msg) showAnswer('Note', msg); }
   if(window.claude && typeof window.claude.use === 'function'){
