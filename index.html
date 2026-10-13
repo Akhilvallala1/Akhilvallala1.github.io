@@ -1194,7 +1194,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
         for(var n = 0; ; n++){
           var h = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(c.salt + n)));
           if(leadingZero(h, c.bits)) return {salt: c.salt, ts: c.ts, bits: c.bits, sig: c.sig, nonce: n};
-          if(n % 4000 === 0) await new Promise(function(r){ setTimeout(r, 0); });
+          // no timer yields: each digest already hands control back, and timers are throttled in background tabs
         }
       })();
       return solving;
