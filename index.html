@@ -1172,7 +1172,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
 
   /* ---------- Who's visiting? (optional, goes to Akhil's inbox) ---------- */
   (function(){
-    var VISIT_URL = '';  // Google Apps Script web app URL; the card stays hidden until it is set
+    var VISIT_URL = 'https://script.google.com/macros/s/AKfycbyt9oE-PQCyz0Us6n5eeQiDY-af2ZQlEoT6soJKZ8FMtInqwXN-NyztujyT-17qIZPA2w/exec';  // Apps Script: logs to a Sheet and emails Akhil
     var form = document.getElementById('visitForm');
     if(!VISIT_URL || !form) return;
     form.hidden = false;
