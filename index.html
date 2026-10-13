@@ -547,7 +547,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
           <div>
             <div class="kind"><span class="pill hot">Production</span><span class="pill">Blocsmith · MoatDrop</span></div>
             <h3>MoatDrop engine</h3>
-            <p class="what">Document Q&amp;A, deep extraction, and PII/PHI redaction for legal, finance, and healthcare documents.</p>
+            <p class="what">Share documents with AI agents without handing over the file. Agents ask questions, and answers come back with personal data removed.</p>
           </div>
           <div class="detail">
             <div class="flow"><span>upload</span><em>→</em><span>DLP + Presidio</span><em>→</em><span>Gemini 3.x</span><em>→</em><span>LLM safety net</span><em>→</em><span>MCP / SSE</span></div>
@@ -559,6 +559,9 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
               <li><strong>Retrieval:</strong> RAGAS ablations picked the strategy; adaptive routing for 120k+ token documents, and reranking cut at a quality tie for 28% lower cost.</li>
               <li><strong>Delivery:</strong> remote MCP server for Claude Desktop, Cursor, and Claude Code, run on Cloud Run with field-level encryption, PII-scrubbed logs, and on-call.</li>
             </ul>
+            <div class="links">
+              <a href="https://moatdrop.com/" target="_blank" rel="noopener">moatdrop.com ↗</a>
+            </div>
             <p class="note">Proprietary codebase, so it is described here at the system level.</p>
           </div>
         </div></li>
@@ -1071,6 +1074,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
     'Target roles: AI/ML Engineer, GenAI/LLM Engineer, Applied AI / Forward Deployed Engineer, AI Platform / LLMOps.',
     'Contact: akhilvallalajs@gmail.com, linkedin.com/in/akhil-fau, github.com/Akhilvallala1. Writes on Medium (@AkhilAIWorld) and posts on YouTube (AI with Akhil).',
     'Summary: 6+ years across data and machine learning engineering, 2 years building LLM systems, 14 months owning one in production. Ships retrieval, agent and document-understanding services on Gemini, Claude and OpenAI models with FastAPI, MCP, LangGraph and Docker on GCP.',
+    'MoatDrop (moatdrop.com), built by Blocsmith: lets teams share documents with AI agents without handing over the file; agents ask questions and answers come back with personal data removed, with access rules, query limits, and a log of every query.',
     'Blocsmith LLC (seed-stage PII/PHI redaction platform, MoatDrop), Lead Machine Learning Engineer, Raleigh NC, Aug 2025 to present. Cut p95 latency from 16.4s to 5.2s at equal answer quality by leading the Gemini 3.x migration with split regional routing for embeddings and DLP, validated on a paired A/B. Replaced chunked extraction with a direct-Gemini full-document mode after CUAD showed 0.79 quality in 4.6s vs 0.70 in 114s; production default for every size band. Built a zero-data-retention answering path, rejecting Vertex explicit caching because it persists document text, and reached an 89% cached-token hit rate through document-first prompt-prefix design. Designed the PII redaction pipeline chaining Google DLP and Presidio across finance, legal and healthcare, with an LLM safety net re-checking answers and prompt-injection defense on uploads; 221 of 221 PII instances redacted. RAGAS harness with ablations on chunk size, retrieval depth, reranking and model choice; adaptive routing for 120k+ token documents; cut reranking at a quality tie for 28% lower cost. Shipped a remote MCP server (FastMCP, SSE, sub-second first token) for Claude Desktop, Cursor and Claude Code; runs it on Dockerized Cloud Run with Fernet field-level encryption, PII-scrubbed logging, leak-detection alerting and on-call.',
     'Aventusoft LLC, Data Science Intern, Boca Raton, Jun to Jul 2025: built AIMEE, a voice assistant for post-discharge heart failure monitoring (RAG, OpenAI, ElevenLabs, Twilio), with a prompt evaluation pipeline scoring accuracy, coherence and patient safety, and escalation emails to clinicians.',
     'Florida Atlantic University, Research Assistant (NSF funded) then Teaching Assistant, Aug 2023 to Jun 2025: NSF-funded study of generative AI in education (~15,000 Reddit and news records, PySpark, LLM vs NLTK/VADER/TextBlob); second author in IEEE Transactions on Computational Social Systems; taught the graduate data science seminar.',
@@ -1174,24 +1178,54 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
   (function(){
     var VISIT_URL = 'https://script.google.com/macros/s/AKfycbyt9oE-PQCyz0Us6n5eeQiDY-af2ZQlEoT6soJKZ8FMtInqwXN-NyztujyT-17qIZPA2w/exec';  // Apps Script: logs to a Sheet and emails Akhil
     var form = document.getElementById('visitForm');
-    if(!VISIT_URL || !form) return;
-    form.hidden = false;
+    if(!VISIT_URL || !form || !(window.crypto && crypto.subtle)) return;
     var msg = document.getElementById('vMsg'), send = document.getElementById('vSend');
-    var sent = false;
-    try{ sent = localStorage.getItem('av-visit') === '1'; }catch(e){}
-    if(sent){ msg.textContent = 'Thanks, Akhil already has your note.'; msg.className = 'visit-msg ok'; }
+    var challenge = null, solving = null;
+
+    // Bot check: solve the script's signed puzzle (leading zero bits of SHA-256) while the visitor types.
+    function leadingZero(h, bits){ for(var i = 0; i < bits; i++){ if(h[i >> 3] & (0x80 >> (i & 7))) return false; } return true; }
+    function fetchChallenge(){
+      return fetch(VISIT_URL).then(function(r){ return r.json(); }).then(function(c){ challenge = c; return c; });
+    }
+    function solve(){
+      if(solving) return solving;
+      var c = challenge, enc = new TextEncoder();
+      solving = (async function(){
+        for(var n = 0; ; n++){
+          var h = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(c.salt + n)));
+          if(leadingZero(h, c.bits)) return {salt: c.salt, ts: c.ts, bits: c.bits, sig: c.sig, nonce: n};
+          if(n % 4000 === 0) await new Promise(function(r){ setTimeout(r, 0); });
+        }
+      })();
+      return solving;
+    }
+    fetchChallenge().then(function(c){
+      if(!c.enabled) return;  // switched off in the script: keep the card hidden
+      form.hidden = false;
+      var sent = false;
+      try{ sent = localStorage.getItem('av-visit') === '1'; }catch(e){}
+      if(sent){ msg.textContent = 'Thanks, Akhil already has your note.'; msg.className = 'visit-msg ok'; }
+      form.addEventListener('focusin', function(){ solve(); }, {once: true});
+    }).catch(function(){});
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var email = document.getElementById('vEmail').value.trim();
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg.textContent = 'Add an email so Akhil can reply.'; msg.className = 'visit-msg'; return; }
       var reason = (form.querySelector('input[name=reason]:checked') || {}).value || 'Other';
-      var body = JSON.stringify({name: document.getElementById('vName').value.trim(), email: email, reason: reason,
-                                 note: document.getElementById('vNote').value.trim(), website: document.getElementById('vSite').value});
       send.disabled = true; msg.textContent = 'Sending...'; msg.className = 'visit-msg';
-      fetch(VISIT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: body})
+      var fresh = challenge && Date.now() - Number(challenge.ts) < 13 * 60 * 1000;
+      (fresh ? Promise.resolve() : fetchChallenge().then(function(){ solving = null; }))
+        .then(solve)
+        .then(function(pow){
+          var body = JSON.stringify({name: document.getElementById('vName').value.trim(), email: email, reason: reason,
+                                     note: document.getElementById('vNote').value.trim(), website: document.getElementById('vSite').value, pow: pow});
+          return fetch(VISIT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: body});
+        })
         .then(function(){
           msg.textContent = 'Sent. Akhil will get back to you at ' + email + '.'; msg.className = 'visit-msg ok';
-          form.reset(); try{ localStorage.setItem('av-visit','1'); }catch(e){}
+          form.reset(); solving = null; challenge = null; try{ localStorage.setItem('av-visit','1'); }catch(e){}
+          fetchChallenge().catch(function(){});
         })
         .catch(function(){ msg.textContent = 'That didn\'t go through. Email akhilvallalajs@gmail.com instead.'; msg.className = 'visit-msg'; })
         .then(function(){ send.disabled = false; });
