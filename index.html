@@ -131,6 +131,10 @@ textarea#raw:focus{outline:none}
 .blocked{display:block; padding:10px 12px; border-radius:8px; border:1px solid var(--e-id); color:var(--e-id); font-weight:500}
 .miss{color:var(--muted)}
 
+.eyebrow .latest{text-decoration:none; color:var(--fg); display:inline-flex; gap:8px; align-items:center}
+.eyebrow .latest b{font-weight:500; color:var(--accent-ink); background:var(--accent); padding:2px 7px; border-radius:999px; letter-spacing:.06em}
+.eyebrow .latest:hover{color:var(--accent)}
+
 /* At a glance */
 .glance{border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
 .glance-in{display:grid; grid-template-columns:repeat(5, minmax(0,1fr))}
@@ -379,6 +383,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
     <div class="eyebrow rise d1">
       <span class="label">Lead Machine Learning Engineer</span>
       <span class="label">LLM systems · Guardrails · PII redaction</span>
+      <a class="label latest" href="#p-piiguard"><b>New</b> Won Best Use of NemoClaw &amp; OpenShell, SF ↓</a>
     </div>
     <h1 class="rise d2">I build the <span class="hl">safety layer</span> <span class="soft">between your data and the model.</span></h1>
 
@@ -452,7 +457,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
         <div class="imp"><div class="n">89<small>%</small></div><p>Cached-token hit rate on repeat queries, while keeping zero data retention.</p><span class="src">Blocsmith · prompt-prefix design</span></div>
         <div class="imp"><div class="n">221<small>/221</small></div><p>PII instances redacted across every document size band and retrieval route.</p><span class="src">Blocsmith · redaction pipeline</span></div>
         <div class="imp"><div class="n">50.8<small>%</small></div><p>Lower model cost than routing everything to frontier models.</p><span class="src">Conduit · two-stage router</span></div>
-        <div class="imp"><div class="n">24<small>%</small></div><p>Higher conversion from a TensorFlow recommendation engine for an e-commerce client.</p><span class="src">Accenture</span></div>
+        <div class="imp"><div class="n">0<small>/30</small></div><p>Held-out attacks that leaked past piiguard with its classifier on. Rules alone cut leaks from 76.7% to 16.7% at zero false positives.</p><span class="src">piiguard · award winner, SF</span></div>
       </div>
     </div>
   </section>
@@ -495,9 +500,35 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
     <div class="wrap">
       <div class="sec-head">
         <h2>Selected work</h2>
-        <span class="label" id="workLabel">5 projects · 2024 to now</span>
+        <span class="label" id="workLabel">6 projects · 2024 to now</span>
       </div>
       <ul class="work">
+
+        <li class="row" id="p-piiguard" data-fit="safety platform applied llm"><div class="row-in">
+          <div>
+            <div class="kind"><span class="pill hot">Winner · Best Use of NemoClaw &amp; OpenShell</span><span class="pill">Open source</span><span class="pill">Self-hardening</span></div>
+            <h3>piiguard</h3>
+            <p class="what">A PII leak guard for sandboxed AI agents that hardens itself. Sandboxes decide where an agent may send data; piiguard checks what is inside it.</p>
+            <p class="note">Picked from 109 projects at the Recursive Agents Hackathon, San Francisco, October 2026. Built solo in one day, 65 commits.</p>
+          </div>
+          <div class="detail">
+            <div class="flow"><span>agent in OpenShell</span><em>→</em><span>guard proxy</span><em>→</em><span>allowed API</span><em>→</em><span>restore tokens</span></div>
+            <div class="flow"><span>red team attacks</span><em>→</em><span>coach rewrites rules</span><em>→</em><span>gate</span><em>→</em><span>git tag gen-N</span><em>↺</em></div>
+            <ul class="points">
+              <li><strong>The gap:</strong> an agent allowed to call a search API can paste a customer's SSN into the query, and the sandbox lets it through because the host is on the allow-list.</li>
+              <li><strong>Guard proxy:</strong> swaps PII for reversible tokens before anything leaves the sandbox, then restores the real values on the way back so the agent still finishes its job.</li>
+              <li><strong>Red team:</strong> Nemotron 3 Super on Crusoe tries to sneak PII past the guard with base64, hex, reversed strings, spelled-out digits, and unicode tricks.</li>
+              <li><strong>Coach and gate:</strong> a coach rewrites the rules from what leaked. A change is kept only if leaks drop and false positives don't rise, and every accepted generation is a git tag, so reviewers read a regex diff, not a black box.</li>
+              <li><strong>Results on held-out attacks:</strong> leak rate 76.7% to 16.7% with rules alone and zero false positives; 0 of 30 with the Nemotron 3.5 Lightning classifier; insurance pack 90% to 20%; 92.8% recall on structured identifiers in NVIDIA's Nemotron-PII set vs 68.5% for Presidio.</li>
+            </ul>
+            <p class="note">Presidio still leads on semantic PII like names and places. The repo publishes that too.</p>
+            <div class="links">
+              <a href="https://github.com/Akhilvallala1/piiguard" target="_blank" rel="noopener">Repository ↗</a>
+              <a href="https://youtube.com/watch?v=qMEf-XKlkFI" target="_blank" rel="noopener">Demo video ↗</a>
+              <a href="https://www.linkedin.com/feed/update/urn:li:activity:7518062626044706816/" target="_blank" rel="noopener">Award post ↗</a>
+            </div>
+          </div>
+        </div></li>
 
         <li class="row" id="p-agentshield" data-fit="safety platform applied"><div class="row-in">
           <div>
@@ -743,6 +774,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
       <div>
         <div class="sec-head"><h2>Research &amp; wins</h2></div>
         <ul class="rec">
+          <li><div><a href="https://www.linkedin.com/feed/update/urn:li:activity:7518062626044706816/" target="_blank" rel="noopener">Winner, Best Use of NemoClaw &amp; OpenShell</a><small>piiguard · Recursive Agents Hackathon, San Francisco · out of 109 projects</small></div><span class="yr">2026</span></li>
           <li><div>ITCHATHON, 2nd place<small>AdPilot · San Francisco</small></div><span class="yr">2026</span></li>
           <li><div><a href="https://doi.org/10.1109/TCSS.2025.3630587" target="_blank" rel="noopener">Unpacking Generative AI in Education</a><small>IEEE Transactions on Computational Social Systems · second author</small></div><span class="yr">2025</span></li>
           <li><div><a href="https://digitalcommons.fau.edu/etd_general/16/" target="_blank" rel="noopener">Tiny-Physics</a><small>MS thesis on on-device physics LLMs · FAU</small></div><span class="yr">2025</span></li>
@@ -967,7 +999,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
   render();
 
   /* ---------- Recruiter desk: role fit ---------- */
-  var PROJECTS = {agentshield:'AgentShield', conduit:'Conduit', moatdrop:'MoatDrop engine', adpilot:'AdPilot', tiny:'Tiny-Physics'};
+  var PROJECTS = {piiguard:'piiguard', agentshield:'AgentShield', conduit:'Conduit', moatdrop:'MoatDrop engine', adpilot:'AdPilot', tiny:'Tiny-Physics'};
   var ROLES = [
     {id:'llm', name:'LLM / GenAI Engineer',
      pitch:'He ships LLM features to production and measures every one of them.',
@@ -977,10 +1009,10 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
      projects:['moatdrop','conduit','tiny']},
     {id:'applied', name:'Applied AI / Forward Deployed',
      pitch:'He turns a messy customer problem into a working system, fast.',
-     proof:['Built AdPilot end to end at a hackathon and took 2nd place at ITCHATHON in San Francisco.',
+     proof:['Built piiguard solo in one day (65 commits) and won Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon in San Francisco; AdPilot took 2nd place at ITCHATHON.',
             'Shipped a remote MCP server so customers use MoatDrop straight from Claude Desktop, Cursor, and Claude Code.',
             'Built AIMEE at Aventusoft: a voice assistant for post-discharge heart failure patients, with escalation emails to doctors.'],
-     projects:['adpilot','moatdrop','agentshield']},
+     projects:['piiguard','adpilot','moatdrop']},
     {id:'platform', name:'AI Platform / LLMOps',
      pitch:'He builds the layer every model call goes through: routing, caching, guardrails.',
      proof:['Built Conduit, an OpenAI-compatible gateway with a six-stage pipeline and a two-stage router that cuts cost 50.8% vs all-frontier routing, with CI blocked on LLM-as-judge regressions.',
@@ -991,8 +1023,8 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
      pitch:'His specialty is keeping sensitive data out of models without slowing them down.',
      proof:['Designed the production PII redaction pipeline (Google DLP plus Presidio across finance, legal and healthcare, with an LLM safety net): 221 of 221 PII instances redacted.',
             'Handles HIPAA/PHI through the healthcare vertical, plus defenses against prompt injection in uploaded documents.',
-            'Built AgentShield, a guardrail that learns new rules from its misses and retires rules that misfire, both gated by precision/recall and human approval.'],
-     projects:['agentshield','moatdrop']},
+            'Won Best Use of NemoClaw and OpenShell (out of 109 projects) with piiguard, a self-hardening PII guard for sandboxed agents: held-out leaks cut from 76.7% to 16.7% with zero false positives, 0 of 30 with its classifier.'],
+     projects:['piiguard','agentshield','moatdrop']},
     {id:'data', name:'ML / Data Engineer',
      pitch:'Five years of data engineering before LLMs means the pipelines underneath are solid.',
      proof:['Accenture: an XGBoost pricing model handling 50K+ products an hour (+16% annual revenue) and a TensorFlow recommender (+24% conversion).',
@@ -1024,7 +1056,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
       if(match){ n++; if(!tag){ tag = document.createElement('span'); tag.className = 'pill fit'; kind.insertBefore(tag, kind.firstChild); } tag.textContent = 'Fits your role'; }
       else if(tag){ tag.remove(); }
     });
-    workLabel.textContent = n + ' of 5 match ' + role.name;
+    workLabel.textContent = n + ' of ' + rows.length + ' match ' + role.name;
   }
   ROLES.forEach(function(r){
     var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.dataset.id = r.id; b.textContent = r.name;
@@ -1036,7 +1068,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
   var initial = ROLES.filter(function(r){ return r.id === saved; })[0] || ROLES[0];
   // Render the pitch at rest, but keep all projects fully visible until a recruiter picks a role.
   selectRole(initial);
-  if(!saved){ rows.forEach(function(r){ r.classList.remove('dim'); var t = r.querySelector('.fit'); if(t) t.remove(); }); workLabel.textContent = '5 projects · 2024 to now'; }
+  if(!saved){ rows.forEach(function(r){ r.classList.remove('dim'); var t = r.querySelector('.fit'); if(t) t.remove(); }); workLabel.textContent = rows.length + ' projects · 2024 to now'; }
 
   /* ---------- Recruiter desk: quick answers ---------- */
   var QA = [
@@ -1044,7 +1076,7 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
     {q:'RAG and evaluation experience?', a:'He built a RAGAS eval harness comparing RLM, TOC-RLM, vectorless PageIndex RAG, and embedding-based adaptive RAG, with ablations on chunk size, retrieval depth, reranking, and model choice. He shipped the adaptive route for documents over 120k tokens and cut reranking at a quality tie for 28% lower cost.'},
     {q:'Regulated or healthcare data?', a:'Yes. The MoatDrop redaction pipeline has legal, finance, and healthcare bundles, with HIPAA/PHI handling in the healthcare vertical. At Aventusoft he built AIMEE, a voice assistant that monitors heart failure patients after discharge.'},
     {q:'Leadership?', a:'He holds the lead ML role at Blocsmith and owns the stack end to end. At FAU he received the Graduate Leadership Award, founded and ran the PACE Club (300+ members, 30+ sessions with IEEE speakers and industry engineers) and taught the graduate seminar as a TA.'},
-    {q:'How fast does he build?', a:'Fast enough to win at hackathons: AdPilot took 2nd place at ITCHATHON in San Francisco, and AgentShield began at Buildathon Dallas before becoming a public, tested project.'},
+    {q:'How fast does he build?', a:'Fast enough to win at hackathons. He built piiguard solo in one day (65 commits) and won Best Use of NemoClaw and OpenShell out of 109 projects in San Francisco. AdPilot took 2nd place at ITCHATHON, and AgentShield began at Buildathon Dallas before becoming a public, tested project.'},
     {q:'Location, relocation, and visa?', a:'He is based in South Florida and open to remote US roles or relocating anywhere in the US, including San Francisco and New York. He is currently on an H-1B, so joining a new employer is an H-1B transfer with no new lottery.'}
   ];
   var qaEl = document.getElementById('qa'), answerEl = document.getElementById('answer');
@@ -1083,7 +1115,8 @@ footer .wrap{display:flex; justify-content:space-between; gap:12px; flex-wrap:wr
     'EDS Technologies, Technical Support Engineer, Hyderabad, Sep 2018 to Feb 2019.',
     'Education: MS Data Science, Florida Atlantic University, May 2025, GPA 3.95, Graduate Leadership Award. B.Tech Mechanical Engineering, Vasavi College of Engineering (Osmania University), May 2018.',
     'Projects: AgentShield (open source): inline guardrail proxy for agent-to-agent traffic; regex + Presidio on the hot path; async LLM auditor finds misses; synthesizer turns misses into candidate regex rules; validator gate (false positives on 500 clean messages, precision/recall on a labeled eval set) plus human approval; hot-loads via MongoDB change stream; retires rules with over 20% false positives across 5+ hits from 2+ sessions. Conduit (open source, 2026): proxy-first AI gateway, one OpenAI-compatible API, six-stage pipeline (auth, ingress and egress guards, routing, provider adapters, telemetry), vendor-SDK isolation enforced in CI; two-stage router with a zero-cost heuristic resolving 80%+ of traffic plus a cached LLM tie-break, 50.8% cheaper than all-frontier routing; DLP and Presidio with lossless rehydration; prompt-injection detection 100% on a held-out probe; LLM-as-judge suite blocks CI on regression; FastAPI, LangGraph, Claude/GPT/Ollama. AdPilot (2026): ad assistant for independent wealth managers turning weekly financial news plus the manager view into a Meta ad and creating the campaign through the Meta Ads API; 2nd place at ITCHATHON, San Francisco. Tiny-Physics (MS thesis, 2025): SmolLM2-360M with LoRA and instruction tuning to 0.2451 on MMLU College Physics, 30%+ above base; 6,000+ QA pairs from a multi-agent GPT-4o pipeline; Q4_K_M and Q8_0 GGUF on-device builds.',
-    'Awards and leadership: ITCHATHON 2nd place (2026); Responsible AI Hackathon 3rd place and Innovative Solution Award; CMBB Biotech Hackathon 3rd place; Graduate Leadership Award; PACE Club founder and president (300+ members).',
+    'piiguard (open source, github.com/Akhilvallala1/piiguard, Oct 2026): a self-hardening PII leak guard for sandboxed AI agents. NemoClaw/OpenShell network policy decides where an agent may send data but not what is inside it; piiguard is the content layer. A guard proxy swaps PII for reversible tokens before anything leaves the sandbox and restores values on the way back. A red-team agent (Nemotron 3 Super on Crusoe) generates evasions (base64, hex, reversed strings, spelled-out digits, unicode, split values); a coach agent rewrites the rules and classifier prompt; a gate keeps a change only if validation leaks drop and false positives do not rise, and each accepted generation is a git tag. Held-out results (n=30): leak rate 76.7% at gen-0 to 16.7% at gen-14 with rules only and 0% false positives; 0 of 30 with the Nemotron 3.5 Lightning classifier added. Insurance pack held-out leaks 90% to 20%. On NVIDIA Nemotron-PII (290 records), 92.8% recall on structured identifiers vs 68.5% for Presidio; Presidio still leads on overall and semantic PII such as names. Built solo in one day, 65 commits. Won Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon (Cerebral Valley, Crusoe, NVIDIA, You.com), San Francisco, Oct 2026, out of 109 projects.',
+    'Awards and leadership: Best Use of NemoClaw and OpenShell, Recursive Agents Hackathon, SF (2026, piiguard, out of 109 projects); ITCHATHON 2nd place (2026); Responsible AI Hackathon 3rd place and Innovative Solution Award; CMBB Biotech Hackathon 3rd place; Graduate Leadership Award; PACE Club founder and president (300+ members).',
     'Skills: Python, SQL, PySpark, RAG, LangGraph, LangChain, MCP/FastMCP, tool calling, multi-agent pipelines, model routing, Claude, OpenAI/GPT-4o, Gemini, Vertex AI, Hugging Face, RAGAS, LLM-as-judge, Lighteval, Langfuse, Google DLP, Presidio, prompt-injection defense, zero-data-retention architecture, field-level encryption, HIPAA/PHI, FastAPI, SSE, Docker, GCP Cloud Run, GitHub Actions, Azure DevOps, pytest, PostgreSQL, PyTorch, TensorFlow, scikit-learn, XGBoost, LoRA, GGUF quantization, Spark, Databricks, pgvector, Weaviate, Qdrant, FAISS, Chroma.'
   ].join('\n');
 
