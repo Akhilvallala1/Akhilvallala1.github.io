@@ -7,6 +7,10 @@
 // Bot check: each visitor's browser solves a small proof-of-work puzzle (~1-3 s, done
 // while they type). Puzzles are signed by this script, expire after 15 minutes, and
 // can be used once. Plus a hidden honeypot field and a hard cap of 50 notes a day.
+//
+// Page views: every page of the site sends one anonymous hit (page, referring site,
+// phone or desktop). No IP, no cookies, no names. They land in the "Visits" tab,
+// capped at 3,000 a day. Turn just the counting off with visitsOff (visitsOn to resume).
 const NOTIFY = 'akhilvallalajs@gmail.com';
 const DAILY_MAX = 50;
 const BITS = 18;                 // puzzle difficulty: leading zero bits in SHA-256(salt + nonce)
@@ -16,9 +20,14 @@ const REASONS = ['Hiring', 'Want to build something', 'Just looking'];
 function turnOff() { PropertiesService.getScriptProperties().setProperty('ENABLED', 'false'); }
 function turnOn() { PropertiesService.getScriptProperties().setProperty('ENABLED', 'true'); }
 function enabled_() { return PropertiesService.getScriptProperties().getProperty('ENABLED') !== 'false'; }
+function visitsOff() { PropertiesService.getScriptProperties().setProperty('VISITS', 'false'); }
+function visitsOn() { PropertiesService.getScriptProperties().setProperty('VISITS', 'true'); }
+const VISITS_MAX = 3000;
 
-// GET: is the card on, plus a fresh signed puzzle.
-function doGet() {
+// GET ?hit=1: count a page view. Otherwise: is the card on, plus a fresh signed puzzle.
+function doGet(e) {
+  const q = (e && e.parameter) || {};
+  if (q.hit) return logHit_(q);
   if (!enabled_()) return reply_({ enabled: false });
   const salt = Utilities.getUuid().replace(/-/g, '');
   const ts = String(Date.now());
@@ -57,6 +66,36 @@ function doPost(e) {
   } catch (err) {
     return reply_({ ok: false });
   }
+}
+
+function logHit_(q) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    if (props.getProperty('VISITS') === 'false') return reply_({ ok: true });
+    const path = String(q.p || '/');
+    if (!/^\/[a-z0-9\/_-]{0,60}$/i.test(path)) return reply_({ ok: true });
+    const ref = clean_(q.r, 60).toLowerCase().replace(/[^a-z0-9.-]/g, '') || 'direct';
+    const device = q.d === 'm' ? 'phone' : 'desktop';
+    const lock = LockService.getScriptLock();
+    if (!lock.tryLock(5000)) return reply_({ ok: true });
+    try {
+      const key = 'v_' + Utilities.formatDate(new Date(), 'UTC', 'yyyy-MM-dd');
+      const n = Number(props.getProperty(key) || 0);
+      if (n >= VISITS_MAX) return reply_({ ok: true });
+      props.setProperty(key, String(n + 1));
+      const book = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = book.getSheetByName('Visits');
+      if (!sheet) {
+        sheet = book.insertSheet('Visits');
+        sheet.appendRow(['Time', 'Page', 'Came from', 'Device']);
+        sheet.setFrozenRows(1);
+      }
+      sheet.appendRow([new Date(), path, ref, device]);
+    } finally {
+      lock.releaseLock();
+    }
+  } catch (err) {}
+  return reply_({ ok: true });
 }
 
 function validProof_(p) {

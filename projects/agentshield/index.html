@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AgentShield: A Guardrail That Learns and Unlearns PII Rules · Akhil Vallala</title>
+<meta name="description" content="AgentShield is an open-source guardrail proxy for agent-to-agent traffic. An async LLM auditor turns missed PII into tested regex rules, and rules that misfire on live traffic are retired, with human approval both ways.">
+<link rel="canonical" href="https://akhilvallala1.github.io/projects/agentshield/">
+<meta property="og:title" content="AgentShield: A Guardrail That Learns and Unlearns PII Rules · Akhil Vallala">
+<meta property="og:description" content="AgentShield is an open-source guardrail proxy for agent-to-agent traffic. An async LLM auditor turns missed PII into tested regex rules, and rules that misfire on live traffic are retired, with human approval both ways.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://akhilvallala1.github.io/projects/agentshield/">
+<meta property="og:image" content="https://akhilvallala1.github.io/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="author" content="Akhil Vallala">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+@font-face{font-family:"Bricolage Grotesque";src:url(/fonts/bricolage.woff2) format("woff2");font-weight:200 800;font-display:optional}
+@font-face{font-family:"Geist";src:url(/fonts/geist.woff2) format("woff2");font-weight:100 900;font-display:optional}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:92.1%;ascent-override:101.0%;descent-override:29.3%;line-gap-override:0%}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:89.7%;ascent-override:103.7%;descent-override:30.1%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:103.0%;ascent-override:97.6%;descent-override:28.6%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:99.4%;ascent-override:101.1%;descent-override:29.7%;line-gap-override:0%}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "AgentShield", "url": "https://akhilvallala1.github.io/projects/agentshield/", "description": "AgentShield is an open-source guardrail proxy for agent-to-agent traffic. An async LLM auditor turns missed PII into tested regex rules, and rules that misfire on live traffic are retired, with human approval both ways.", "codeRepository": "https://github.com/Akhilvallala1/agentshield", "programmingLanguage": "Python", "author": {"@type": "Person", "name": "Akhil Vallala", "url": "https://akhilvallala1.github.io/"}, "keywords": "FastAPI, Microsoft Presidio, spaCy, MongoDB Atlas, Change streams, Atlas Vector Search, Voyage embeddings, OpenAI structured outputs, Rich, pytest, Cloud Run (public demo)"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Akhil Vallala", "item": "https://akhilvallala1.github.io/"}, {"@type": "ListItem", "position": 2, "name": "Projects", "item": "https://akhilvallala1.github.io/projects/"}, {"@type": "ListItem", "position": 3, "name": "AgentShield", "item": "https://akhilvallala1.github.io/projects/agentshield/"}]}</script><style>:root{
+  --bg:#0B0E16; --surface:#121725; --surface-2:#181E2F; --line:#242B3E;
+  --fg:#E8EBF2; --muted:#8C95A8; --accent:#F1B13C; --accent-ink:#0B0E16;
+  --bar:#262D42;
+  --e-person:#93B9FF; --e-contact:#7DD3B0; --e-id:#FF9F8C; --e-date:#F1B13C; --e-finance:#C7A2FF;
+  --f-display:"Bricolage Grotesque", "Bricolage Fallback", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Geist", "Geist Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter:clamp(16px, 4vw, 48px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+    --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+    --bar:#E2E5EE;
+    --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+  --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+  --bar:#E2E5EE;
+  --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+  color-scheme:light;
+}
+
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:var(--gutter)}
+.label{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1240px;margin:0 auto;padding:12px var(--gutter);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.mark span{color:var(--accent)}
+.hire{font-size:14px;font-weight:500;text-decoration:none;padding:8px 16px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.crumbs{margin:36px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.crumbs li+li::before{content:"/";margin-right:8px;color:var(--line)}
+.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--accent)}
+header.top{padding:28px 0 8px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.pill{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.hot{border-color:var(--accent);color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.035em;margin:0 0 6px}
+h1 .name{display:block;font-size:.42em;letter-spacing:-.01em;color:var(--accent);margin-bottom:14px;font-weight:600}
+.lede{font-size:clamp(18px,2.2vw,21px);color:var(--fg);max-width:720px;margin:20px 0 0}
+.context{color:var(--muted);font-size:15px;margin:14px 0 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:40px 0 8px}
+.stat{background:var(--surface);padding:22px 20px}
+.stat b{display:block;font-family:var(--f-display);font-weight:600;font-size:30px;letter-spacing:-.02em;line-height:1.1;color:var(--fg)}
+.stat span{display:block;margin-top:8px;font-size:14px;line-height:1.45;color:var(--muted)}
+section{padding:36px 0 8px;border-top:1px solid var(--line);margin-top:36px}
+h2{font-family:var(--f-display);font-weight:600;font-size:clamp(24px,3.2vw,32px);letter-spacing:-.02em;line-height:1.15;margin:0 0 16px}
+p{margin:0 0 14px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font-family:var(--f-mono);font-size:13px}
+.flow span{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px}
+.flow em{font-style:normal;color:var(--accent)}
+.steps{margin:18px 0 0;padding-left:22px}
+.steps li{margin:0 0 12px;padding-left:4px}
+.steps li::marker{font-family:var(--f-mono);color:var(--accent)}
+.points{margin:0;padding-left:20px}
+.points li{margin:0 0 10px}
+b{font-weight:600}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+tbody tr:last-child td{border-bottom:0}
+tr.win td{color:var(--accent);font-weight:600}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.stack li{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;font-size:15px;font-weight:500;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cta{margin:56px 0 0;padding:32px clamp(20px,4vw,40px);border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.cta h2{margin-bottom:10px}
+.cta p{color:var(--muted);max-width:600px}
+.cta .links{margin-top:20px}
+.more{margin:48px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.more a{display:block;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--surface)}
+.more a:hover{border-color:var(--accent)}
+.more b{display:block;font-family:var(--f-display);font-size:20px;margin-top:4px}
+.more small{display:block;color:var(--muted);font-size:14px;margin-top:4px;line-height:1.45}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{text-decoration:none}footer a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<header class="nav"><div class="nav-in"><a class="mark" href="/">akhil<span>.</span>vallala</a><a class="hire" href="/#contact">Get in touch</a></div></header>
+<main class="wrap"><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">AgentShield</li></ol></nav><header class="top"><div class="pills"><span class="pill hot">Open source</span><span class="pill">Self-improving</span><span class="pill">Agent security</span></div><h1><span class="name">AgentShield</span>A guardrail that learns new PII rules from its misses, and unlearns the ones that misfire.</h1><p class="lede">Agents now hand data to each other. Static filters miss anything they weren't written for: policy numbers, claim IDs, badge formats. AgentShield keeps the inline path fast and cheap, and moves LLM judgment offline, where it gets distilled into compiled, tested rules.</p><p class="context">You can run its real engine in the redaction console on the home page.</p></header><div class="stats"><div class="stat"><b>0</b><span>LLM calls on the request path: compiled regex plus Presidio only</span></div><div class="stat"><b>4</b><span>Validator gates before a human sees a rule</span></div><div class="stat"><b>&gt;20%</b><span>False-positive rate (on 5+ hits from 2+ sessions) that triggers retirement</span></div><div class="stat"><b>62</b><span>Automated tests, none touching the database or an LLM</span></div></div><section><h2>The problem</h2><p>Multi-agent systems pass customer data between agents all the time. A PII filter that only knows names, emails, and SSNs lets a policy number like <code>INS-AZ-4471-K</code> straight through, and nobody notices until it shows up somewhere it shouldn't.</p></section><section><h2>How a message is handled</h2><div class="flow"><span>Intake agent</span><em>→</em><span>learned rules + Presidio</span><em>→</em><span>playbook action</span><em>→</em><span>Claims agent</span></div><ol class="steps">
+<li><b>Detect.</b> Learned regex rules (L1) and Presidio NER (L2) run in a pure function with no I/O, the same code the evals and validator use.</li>
+<li><b>Block first.</b> Blocking is decided on raw detections, before overlaps are resolved, so an overlapping rule can never hide an SSN.</li>
+<li><b>Apply the playbook.</b> Per agent pair: tokenize, mask, generalize, or block. Floors no playbook can weaken: SSNs always block, cards are always at least masked.</li>
+<li><b>Tokenize reversibly.</b> Tokens are a session-salted hash, consistent within a session and unlinkable across sessions. Raw values live only in a vault with a 1-hour TTL.</li>
+<li><b>Restore for the caller.</b> The reply is shielded too, then only tokens minted in this exchange are swapped back, so the vault can't be used as a lookup oracle.</li>
+</ol></section><section><h2>How it learns</h2><div class="flow"><span>auditor</span><em>→</em><span>incident</span><em>→</em><span>synthesizer</span><em>⇄</em><span>validator</span><em>→</em><span>human approves</span><em>→</em><span>hot-load</span></div><ol class="steps">
+<li><b>Audit.</b> After delivery, an LLM auditor reviews the already-redacted payload. A finding is kept only if its span appears verbatim in the text, so hallucinations never become incidents. Incidents store the value's shape and hash, never the value.</li>
+<li><b>Synthesize.</b> The miss, the three most similar past incidents (Atlas Vector Search), and the domain taxonomy go to a synthesizer that returns a regex with should-match and should-not-match examples, or says the case isn't regex-shaped.</li>
+<li><b>Validate.</b> Four gates: the pattern compiles; no catastrophic backtracking on 10 KB adversarial strings; under 1% matches on 500 clean look-alike messages; recall rises on the labeled eval set while precision drops by at most a point. Failures go back to the synthesizer, up to three times.</li>
+<li><b>Approve and hot-load.</b> A human approves in the terminal. A MongoDB change stream loads the rule into the running gateway within about a second, and a new eval generation is written.</li>
+</ol></section><section><h2>How it unlearns</h2><p>The gateway counts live hits per rule and stores each hit's context with the value replaced by its shape. A reviewer judges whether each hit was really personal data. In the recorded run, a policy-number rule started matching marketing product codes: 6 of its 7 live hits were judged not personal. Past 20% false positives on at least 5 hits from at least 2 sessions, retirement is proposed. The rule stays live until a human approves, then it's demoted to shadow and a new eval generation is written.</p><p>Requiring two independent sessions means one sender can't switch off a protection by spamming look-alikes.</p></section><section><h2>Where it falls short</h2><ul class="points">
+<li>The first occurrence of a new identifier type gets through: auditing happens after delivery, so the system learns from the leak rather than preventing it.</li>
+<li>Learned rules are regex only. Quasi-identifiers like "the only Cybertruck owner on Elm St" are flagged for a human.</li>
+<li>The retirement thresholds suit a demo; production would want a confidence interval before retiring a rule.</li>
+</ul></section><section><h2>Stack</h2><ul class="stack"><li>FastAPI</li><li>Microsoft Presidio</li><li>spaCy</li><li>MongoDB Atlas</li><li>Change streams</li><li>Atlas Vector Search</li><li>Voyage embeddings</li><li>OpenAI structured outputs</li><li>Rich</li><li>pytest</li><li>Cloud Run (public demo)</li></ul></section><section><h2>Links</h2><div class="links"><a class="btn" href="https://github.com/Akhilvallala1/agentshield" target="_blank" rel="noopener">Repository ↗</a><a class="btn" href="https://youtu.be/rxwgwG6DUzY" target="_blank" rel="noopener">Demo video ↗</a><a class="btn" href="/#top">Try the live engine</a></div></section><aside class="cta"><h2>Want this kind of work on your team?</h2><p>Akhil Vallala is a Lead Machine Learning Engineer who builds LLM systems, guardrails, and PII redaction for production. He is open to AI/ML roles, remote in the US or relocating.</p><div class="links"><a class="btn primary" href="/#contact">Get in touch</a><a class="btn" href="/">See all his work</a></div></aside><div class="more"><a href="/projects/piiguard/"><span class="label">Case study</span><b>piiguard</b><small>A PII leak guard for sandboxed AI agents that hardens itself.</small></a><a href="/projects/conduit/"><span class="label">Case study</span><b>Conduit</b><small>One gateway for every model call, routed by complexity and guarded both ways.</small></a></div></main><footer><div class="wrap"><span>© 2026 Akhil Vallala</span><span><a href="https://www.linkedin.com/in/akhil-fau/">LinkedIn</a> · <a href="https://github.com/Akhilvallala1">GitHub</a> · <a href="/">Home</a></span></div></footer>
+<script>(function(){try{if(location.hostname!=='akhilvallala1.github.io'||navigator.webdriver)return;var r='';try{r=document.referrer?new URL(document.referrer).hostname:'';}catch(e){}if(r===location.hostname)r='internal';var q='?hit=1&p='+encodeURIComponent(location.pathname)+'&r='+encodeURIComponent(r)+'&d='+(matchMedia('(max-width:700px)').matches?'m':'d');fetch('https://script.google.com/macros/s/AKfycbyt9oE-PQCyz0Us6n5eeQiDY-af2ZQlEoT6soJKZ8FMtInqwXN-NyztujyT-17qIZPA2w/exec'+q,{mode:'no-cors',keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

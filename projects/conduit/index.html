@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Conduit: AI Gateway with Complexity Routing and PII Guards · Akhil Vallala</title>
+<meta name="description" content="Conduit is an open-source, proxy-first AI gateway: one OpenAI-compatible API, an enforced six-stage pipeline, complexity-based model routing that cut cost 50.8% vs all-Opus, PII and injection guards, and CI-gated evals.">
+<link rel="canonical" href="https://akhilvallala1.github.io/projects/conduit/">
+<meta property="og:title" content="Conduit: AI Gateway with Complexity Routing and PII Guards · Akhil Vallala">
+<meta property="og:description" content="Conduit is an open-source, proxy-first AI gateway: one OpenAI-compatible API, an enforced six-stage pipeline, complexity-based model routing that cut cost 50.8% vs all-Opus, PII and injection guards, and CI-gated evals.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://akhilvallala1.github.io/projects/conduit/">
+<meta property="og:image" content="https://akhilvallala1.github.io/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="author" content="Akhil Vallala">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+@font-face{font-family:"Bricolage Grotesque";src:url(/fonts/bricolage.woff2) format("woff2");font-weight:200 800;font-display:optional}
+@font-face{font-family:"Geist";src:url(/fonts/geist.woff2) format("woff2");font-weight:100 900;font-display:optional}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:92.1%;ascent-override:101.0%;descent-override:29.3%;line-gap-override:0%}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:89.7%;ascent-override:103.7%;descent-override:30.1%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:103.0%;ascent-override:97.6%;descent-override:28.6%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:99.4%;ascent-override:101.1%;descent-override:29.7%;line-gap-override:0%}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "Conduit", "url": "https://akhilvallala1.github.io/projects/conduit/", "description": "Conduit is an open-source, proxy-first AI gateway: one OpenAI-compatible API, an enforced six-stage pipeline, complexity-based model routing that cut cost 50.8% vs all-Opus, PII and injection guards, and CI-gated evals.", "codeRepository": "https://github.com/Akhilvallala1/conduit-ai-gateway", "programmingLanguage": "Python", "author": {"@type": "Person", "name": "Akhil Vallala", "url": "https://akhilvallala1.github.io/"}, "keywords": "Python, FastAPI, LangGraph, Anthropic, Ollama, sqlite-vec, Docker Compose, pytest, mypy, ruff, GitHub Actions"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Akhil Vallala", "item": "https://akhilvallala1.github.io/"}, {"@type": "ListItem", "position": 2, "name": "Projects", "item": "https://akhilvallala1.github.io/projects/"}, {"@type": "ListItem", "position": 3, "name": "Conduit", "item": "https://akhilvallala1.github.io/projects/conduit/"}]}</script><style>:root{
+  --bg:#0B0E16; --surface:#121725; --surface-2:#181E2F; --line:#242B3E;
+  --fg:#E8EBF2; --muted:#8C95A8; --accent:#F1B13C; --accent-ink:#0B0E16;
+  --bar:#262D42;
+  --e-person:#93B9FF; --e-contact:#7DD3B0; --e-id:#FF9F8C; --e-date:#F1B13C; --e-finance:#C7A2FF;
+  --f-display:"Bricolage Grotesque", "Bricolage Fallback", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Geist", "Geist Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter:clamp(16px, 4vw, 48px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+    --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+    --bar:#E2E5EE;
+    --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+  --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+  --bar:#E2E5EE;
+  --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+  color-scheme:light;
+}
+
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:var(--gutter)}
+.label{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1240px;margin:0 auto;padding:12px var(--gutter);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.mark span{color:var(--accent)}
+.hire{font-size:14px;font-weight:500;text-decoration:none;padding:8px 16px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.crumbs{margin:36px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.crumbs li+li::before{content:"/";margin-right:8px;color:var(--line)}
+.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--accent)}
+header.top{padding:28px 0 8px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.pill{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.hot{border-color:var(--accent);color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.035em;margin:0 0 6px}
+h1 .name{display:block;font-size:.42em;letter-spacing:-.01em;color:var(--accent);margin-bottom:14px;font-weight:600}
+.lede{font-size:clamp(18px,2.2vw,21px);color:var(--fg);max-width:720px;margin:20px 0 0}
+.context{color:var(--muted);font-size:15px;margin:14px 0 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:40px 0 8px}
+.stat{background:var(--surface);padding:22px 20px}
+.stat b{display:block;font-family:var(--f-display);font-weight:600;font-size:30px;letter-spacing:-.02em;line-height:1.1;color:var(--fg)}
+.stat span{display:block;margin-top:8px;font-size:14px;line-height:1.45;color:var(--muted)}
+section{padding:36px 0 8px;border-top:1px solid var(--line);margin-top:36px}
+h2{font-family:var(--f-display);font-weight:600;font-size:clamp(24px,3.2vw,32px);letter-spacing:-.02em;line-height:1.15;margin:0 0 16px}
+p{margin:0 0 14px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font-family:var(--f-mono);font-size:13px}
+.flow span{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px}
+.flow em{font-style:normal;color:var(--accent)}
+.steps{margin:18px 0 0;padding-left:22px}
+.steps li{margin:0 0 12px;padding-left:4px}
+.steps li::marker{font-family:var(--f-mono);color:var(--accent)}
+.points{margin:0;padding-left:20px}
+.points li{margin:0 0 10px}
+b{font-weight:600}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+tbody tr:last-child td{border-bottom:0}
+tr.win td{color:var(--accent);font-weight:600}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.stack li{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;font-size:15px;font-weight:500;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cta{margin:56px 0 0;padding:32px clamp(20px,4vw,40px);border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.cta h2{margin-bottom:10px}
+.cta p{color:var(--muted);max-width:600px}
+.cta .links{margin-top:20px}
+.more{margin:48px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.more a{display:block;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--surface)}
+.more a:hover{border-color:var(--accent)}
+.more b{display:block;font-family:var(--f-display);font-size:20px;margin-top:4px}
+.more small{display:block;color:var(--muted);font-size:14px;margin-top:4px;line-height:1.45}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{text-decoration:none}footer a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<header class="nav"><div class="nav-in"><a class="mark" href="/">akhil<span>.</span>vallala</a><a class="hire" href="/#contact">Get in touch</a></div></header>
+<main class="wrap"><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">Conduit</li></ol></nav><header class="top"><div class="pills"><span class="pill hot">Open source</span><span class="pill">Model routing</span><span class="pill">Evals in CI</span></div><h1><span class="name">Conduit</span>One gateway for every model call, routed by complexity and guarded both ways.</h1><p class="lede">When every team calls models directly, nobody controls cost, PII, or vendor lock-in. Conduit puts every call through one OpenAI-compatible process with an order the code enforces.</p></header><div class="stats"><div class="stat"><b>50.8%</b><span>Lower model cost than sending everything to the frontier tier (target was 40%)</span></div><div class="stat"><b>88.6%</b><span>Router tier agreement on the labeled set</span></div><div class="stat"><b>0%</b><span>Prompt-injection false positives</span></div><div class="stat"><b>941</b><span>Tests passing, with mypy --strict and an 80% coverage gate</span></div></div><section><h2>An enforced pipeline</h2><div class="flow"><span>auth</span><em>→</em><span>ingress guard</span><em>→</em><span>router</span><em>→</em><span>provider adapter</span><em>→</em><span>egress guard</span><em>→</em><span>telemetry</span></div><ol class="steps">
+<li><b>Auth.</b> API key to team, quota, and policy.</li>
+<li><b>Ingress guard.</b> PII redaction and prompt-injection detection before any model sees the request.</li>
+<li><b>Router.</b> Complexity to tier to a model chain, with fallback down the chain instead of failing.</li>
+<li><b>Provider adapters.</b> Vendor SDKs live only here, and a CI test enforces it, so swapping providers is a config change.</li>
+<li><b>Egress guard.</b> Re-scans the response and restores tokens.</li>
+<li><b>Telemetry.</b> Tokens, cost, latency, trace, and verdict for every call.</li>
+</ol><p>The stages are an enum, and running one out of order raises <code>PipelineOrderError</code>, so the router can't jump ahead of the ingress guard.</p></section><section><h2>Routing that pays for itself</h2><p>A two-stage router sends most traffic to cheap models. A zero-cost heuristic resolves 80%+ of requests, and a cached LLM tie-break handles the ones with no lexical evidence either way. One fix separated the instruction from pasted material: a quote pasted under a short question used to push a trivial request up to the complex tier.</p></section><section><h2>Evals as a merge gate</h2><ul class="points">
+<li>Golden datasets, rubrics, and an LLM-as-judge suite; a quality drop fails the pull request.</li>
+<li>CI runs lint, format, <code>mypy --strict</code>, the vendor-SDK guard, unit and integration stages, a coverage gate, and a zero-key Docker smoke test.</li>
+<li>Evals run offline at $0. Deploy is manual only, never on merge.</li>
+</ul></section><section><h2>Reading the numbers honestly</h2><p>The 88.6% routing figure and the 100% injection detection rate are upper bounds: both were reached by fixing rules after reading the failing cases. A held-out probe caught one over-broad and one too-narrow injection rule before shipping. The unfitted check is the held-out property test.</p></section><section><h2>Stack</h2><ul class="stack"><li>Python</li><li>FastAPI</li><li>LangGraph</li><li>Anthropic</li><li>Ollama</li><li>sqlite-vec</li><li>Docker Compose</li><li>pytest</li><li>mypy</li><li>ruff</li><li>GitHub Actions</li></ul></section><section><h2>Links</h2><div class="links"><a class="btn" href="https://github.com/Akhilvallala1/conduit-ai-gateway" target="_blank" rel="noopener">Repository ↗</a></div></section><aside class="cta"><h2>Want this kind of work on your team?</h2><p>Akhil Vallala is a Lead Machine Learning Engineer who builds LLM systems, guardrails, and PII redaction for production. He is open to AI/ML roles, remote in the US or relocating.</p><div class="links"><a class="btn primary" href="/#contact">Get in touch</a><a class="btn" href="/">See all his work</a></div></aside><div class="more"><a href="/projects/piiguard/"><span class="label">Case study</span><b>piiguard</b><small>A PII leak guard for sandboxed AI agents that hardens itself.</small></a><a href="/projects/agentshield/"><span class="label">Case study</span><b>AgentShield</b><small>A guardrail that learns new PII rules from its misses, and unlearns the ones that misfire.</small></a></div></main><footer><div class="wrap"><span>© 2026 Akhil Vallala</span><span><a href="https://www.linkedin.com/in/akhil-fau/">LinkedIn</a> · <a href="https://github.com/Akhilvallala1">GitHub</a> · <a href="/">Home</a></span></div></footer>
+<script>(function(){try{if(location.hostname!=='akhilvallala1.github.io'||navigator.webdriver)return;var r='';try{r=document.referrer?new URL(document.referrer).hostname:'';}catch(e){}if(r===location.hostname)r='internal';var q='?hit=1&p='+encodeURIComponent(location.pathname)+'&r='+encodeURIComponent(r)+'&d='+(matchMedia('(max-width:700px)').matches?'m':'d');fetch('https://script.google.com/macros/s/AKfycbyt9oE-PQCyz0Us6n5eeQiDY-af2ZQlEoT6soJKZ8FMtInqwXN-NyztujyT-17qIZPA2w/exec'+q,{mode:'no-cors',keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

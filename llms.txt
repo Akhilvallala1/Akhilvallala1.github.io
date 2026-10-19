@@ -1,0 +1,24 @@
+# Akhil Vallala
+
+> Lead Machine Learning Engineer in Boca Raton, Florida. He builds LLM systems, guardrails, and PII/PHI redaction that are fast, cheap, and safe in production. Open to AI/ML Engineer, GenAI/LLM Engineer, Applied AI, and AI Platform roles (remote in the US or relocating). Currently on an H-1B, so a new role is a transfer with no lottery.
+
+Contact: akhilvallalajs@gmail.com · LinkedIn: https://www.linkedin.com/in/akhil-fau/ · GitHub: https://github.com/Akhilvallala1
+
+## Profile
+
+- [Home page](https://akhilvallala1.github.io/): experience, projects, measured results, research, and writing.
+- Current role: Lead Machine Learning Engineer at Blocsmith LLC (MoatDrop, https://moatdrop.com/), building document intelligence and PII redaction.
+- Earlier: Accenture (Platform Development Analyst, Data Analyst) and Infosys (Systems Engineer and Senior Systems Engineer, Data Engineer).
+- Education: MS in Data Science, Florida Atlantic University (Graduate Leadership Award, 2025).
+- Awards: Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon, San Francisco (2026, piiguard, out of 109 projects); ITCHATHON 2nd place (2026).
+
+## Case studies
+
+- [piiguard](https://akhilvallala1.github.io/projects/piiguard/): piiguard is an open-source PII leak guard for sandboxed AI agents that hardens itself with a red team, a coach, and a gate. Winner of Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon.
+- [AgentShield](https://akhilvallala1.github.io/projects/agentshield/): AgentShield is an open-source guardrail proxy for agent-to-agent traffic. An async LLM auditor turns missed PII into tested regex rules, and rules that misfire on live traffic are retired, with human approval both ways.
+- [Conduit](https://akhilvallala1.github.io/projects/conduit/): Conduit is an open-source, proxy-first AI gateway: one OpenAI-compatible API, an enforced six-stage pipeline, complexity-based model routing that cut cost 50.8% vs all-Opus, PII and injection guards, and CI-gated evals.
+
+## Writing and video
+
+- [Medium](https://medium.com/@AkhilAIWorld): articles on AI engineering.
+- [YouTube](https://www.youtube.com/@AIwithAkhil-i5j): AI explainers and demos.

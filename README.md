@@ -1,43 +1,26 @@
 # akhil.vallala portfolio
 
-A single static page. No build step, no framework, no server.
+Static site on GitHub Pages: https://akhilvallala1.github.io
 
 ```
-index.html    the whole site (styles, scripts and headshot are inlined)
-favicon.svg   browser tab icon
-og.png        the preview image LinkedIn, Slack and iMessage show when the link is shared
+index.html          home page
+projects/           case studies: piiguard, AgentShield, Conduit, plus an index
+fonts/              self-hosted fonts (no Google Fonts request, no layout shift on load)
+headshot*.webp      headshot (192 px for the page, 480 px for search and link previews)
+favicon.svg, og.png tab icon and share image
+robots.txt, sitemap.xml, llms.txt   instructions for search engines and AI assistants
+api/                the "Ask about Akhil" service (Cloud Run) and the visitor-card Apps Script
 ```
 
-## Deploy (pick one)
+The pages are generated from one source file by a small Python build script, so edits are made
+there and the output is copied here.
 
-**Netlify Drop (2 minutes, no account setup beyond sign-in)**
-1. Go to app.netlify.com/drop
-2. Drag this whole folder onto the page
-3. You get a live URL right away. Rename it under Site settings, or add a custom domain.
+## Live pieces
 
-**Vercel**
-1. Put this folder in a GitHub repo (for example `portfolio`)
-2. On vercel.com, choose Add New, then Project, and import the repo
-3. Framework preset: Other. No build command. Deploy.
+- **Redaction console:** calls the AgentShield demo API on Cloud Run (scales to zero).
+- **Ask about Akhil:** `api/` on Cloud Run with Gemini Flash-Lite, rate-limited, answers only about Akhil.
+- **Who's visiting? card and page-view counts:** `api/visitor_card.gs`, an Apps Script web app that
+  writes to a Google Sheet. Page views are anonymous (page, referring site, phone or desktop).
+  Run `turnOff` / `visitsOff` in the script editor to switch either one off.
 
-**GitHub Pages (free, uses your GitHub username)**
-1. Create a repo named `Akhilvallala1.github.io`
-2. Upload these files to the root of the repo
-3. Settings, then Pages, then deploy from the `main` branch
-4. The site goes live at https://akhilvallala1.github.io
-
-## After it is live
-
-1. **Share preview.** The share image already points at https://akhilvallala1.github.io/og.png.
-   If you move to a custom domain, update `og:image`, `og:url` and `canonical` in `index.html`,
-   then paste the URL into linkedin.com/post-inspector to refresh the preview.
-2. **Custom domain.** A domain like `akhilvallala.dev` or `akhilvallala.com` costs about
-   $10 to $15 a year. Both Netlify and Vercel walk you through pointing it at the site.
-3. **Add the link** to your LinkedIn Featured section, your LinkedIn contact info, your
-   GitHub profile, and the header line of your resume.
-
-## Good to know
-
-- The "Ask anything" box only appears when the page is opened inside Claude. On your own
-  domain it hides itself, and the six common questions still work for every visitor.
-- To change any text, edit `index.html` and redeploy. Everything is in that one file.
+Everything runs on free tiers; a $5/month budget alert is set on the Google Cloud project.

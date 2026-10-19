@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>piiguard: Self-Hardening PII Leak Guard for Sandboxed AI Agents · Akhil Vallala</title>
+<meta name="description" content="piiguard is an open-source PII leak guard for sandboxed AI agents that hardens itself with a red team, a coach, and a gate. Winner of Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon.">
+<link rel="canonical" href="https://akhilvallala1.github.io/projects/piiguard/">
+<meta property="og:title" content="piiguard: Self-Hardening PII Leak Guard for Sandboxed AI Agents · Akhil Vallala">
+<meta property="og:description" content="piiguard is an open-source PII leak guard for sandboxed AI agents that hardens itself with a red team, a coach, and a gate. Winner of Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://akhilvallala1.github.io/projects/piiguard/">
+<meta property="og:image" content="https://akhilvallala1.github.io/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="author" content="Akhil Vallala">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+@font-face{font-family:"Bricolage Grotesque";src:url(/fonts/bricolage.woff2) format("woff2");font-weight:200 800;font-display:optional}
+@font-face{font-family:"Geist";src:url(/fonts/geist.woff2) format("woff2");font-weight:100 900;font-display:optional}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Geist Mono";src:url(/fonts/geist-mono-500.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:92.1%;ascent-override:101.0%;descent-override:29.3%;line-gap-override:0%}
+@font-face{font-family:"Bricolage Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:89.7%;ascent-override:103.7%;descent-override:30.1%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial"),local("ArialMT"),local("Helvetica Neue"),local("HelveticaNeue"),local("Roboto"),local("Roboto-Regular");font-weight:100 449;size-adjust:103.0%;ascent-override:97.6%;descent-override:28.6%;line-gap-override:0%}
+@font-face{font-family:"Geist Fallback";src:local("Arial Bold"),local("Arial-BoldMT"),local("Helvetica Neue Bold"),local("HelveticaNeue-Bold"),local("Roboto Bold"),local("Roboto-Bold");font-weight:450 900;size-adjust:99.4%;ascent-override:101.1%;descent-override:29.7%;line-gap-override:0%}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareSourceCode", "name": "piiguard", "url": "https://akhilvallala1.github.io/projects/piiguard/", "description": "piiguard is an open-source PII leak guard for sandboxed AI agents that hardens itself with a red team, a coach, and a gate. Winner of Best Use of NemoClaw and OpenShell at the Recursive Agents Hackathon.", "codeRepository": "https://github.com/Akhilvallala1/piiguard", "programmingLanguage": "Python", "author": {"@type": "Person", "name": "Akhil Vallala", "url": "https://akhilvallala1.github.io/"}, "keywords": "Nemotron 3 Super, Nemotron 3.5 Lightning, Crusoe Managed Inference, NVIDIA NemoClaw, OpenShell, You.com search, Microsoft Presidio (baseline), FastAPI, gRPC, Python 3.12, uv", "award": "Best Use of NemoClaw and OpenShell, Recursive Agents Hackathon, San Francisco (2026)"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Akhil Vallala", "item": "https://akhilvallala1.github.io/"}, {"@type": "ListItem", "position": 2, "name": "Projects", "item": "https://akhilvallala1.github.io/projects/"}, {"@type": "ListItem", "position": 3, "name": "piiguard", "item": "https://akhilvallala1.github.io/projects/piiguard/"}]}</script><style>:root{
+  --bg:#0B0E16; --surface:#121725; --surface-2:#181E2F; --line:#242B3E;
+  --fg:#E8EBF2; --muted:#8C95A8; --accent:#F1B13C; --accent-ink:#0B0E16;
+  --bar:#262D42;
+  --e-person:#93B9FF; --e-contact:#7DD3B0; --e-id:#FF9F8C; --e-date:#F1B13C; --e-finance:#C7A2FF;
+  --f-display:"Bricolage Grotesque", "Bricolage Fallback", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Geist", "Geist Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --gutter:clamp(16px, 4vw, 48px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+    --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+    --bar:#E2E5EE;
+    --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F3F4F8; --surface:#FFFFFF; --surface-2:#EBEDF3; --line:#D6DBE6;
+  --fg:#0E1220; --muted:#596173; --accent:#94590A; --accent-ink:#FFFFFF;
+  --bar:#E2E5EE;
+  --e-person:#2453B8; --e-contact:#0A6647; --e-id:#B23A24; --e-date:#835000; --e-finance:#6A3DBF;
+  color-scheme:light;
+}
+
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:var(--gutter)}
+.label{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1240px;margin:0 auto;padding:12px var(--gutter);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.mark span{color:var(--accent)}
+.hire{font-size:14px;font-weight:500;text-decoration:none;padding:8px 16px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.crumbs{margin:36px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px;font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.crumbs li+li::before{content:"/";margin-right:8px;color:var(--line)}
+.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--accent)}
+header.top{padding:28px 0 8px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.pill{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.hot{border-color:var(--accent);color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(34px,6vw,60px);line-height:1.04;letter-spacing:-.035em;margin:0 0 6px}
+h1 .name{display:block;font-size:.42em;letter-spacing:-.01em;color:var(--accent);margin-bottom:14px;font-weight:600}
+.lede{font-size:clamp(18px,2.2vw,21px);color:var(--fg);max-width:720px;margin:20px 0 0}
+.context{color:var(--muted);font-size:15px;margin:14px 0 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:40px 0 8px}
+.stat{background:var(--surface);padding:22px 20px}
+.stat b{display:block;font-family:var(--f-display);font-weight:600;font-size:30px;letter-spacing:-.02em;line-height:1.1;color:var(--fg)}
+.stat span{display:block;margin-top:8px;font-size:14px;line-height:1.45;color:var(--muted)}
+section{padding:36px 0 8px;border-top:1px solid var(--line);margin-top:36px}
+h2{font-family:var(--f-display);font-weight:600;font-size:clamp(24px,3.2vw,32px);letter-spacing:-.02em;line-height:1.15;margin:0 0 16px}
+p{margin:0 0 14px}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;font-family:var(--f-mono);font-size:13px}
+.flow span{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px}
+.flow em{font-style:normal;color:var(--accent)}
+.steps{margin:18px 0 0;padding-left:22px}
+.steps li{margin:0 0 12px;padding-left:4px}
+.steps li::marker{font-family:var(--f-mono);color:var(--accent)}
+.points{margin:0;padding-left:20px}
+.points li{margin:0 0 10px}
+b{font-weight:600}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:0 0 16px}
+table{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+tbody tr:last-child td{border-bottom:0}
+tr.win td{color:var(--accent);font-weight:600}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.stack li{font-family:var(--f-mono);font-size:13px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:999px;font-size:15px;font-weight:500;text-decoration:none;border:1px solid var(--line);color:var(--fg)}
+.btn:hover{border-color:var(--fg)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.btn.primary:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cta{margin:56px 0 0;padding:32px clamp(20px,4vw,40px);border:1px solid var(--line);border-radius:18px;background:var(--surface)}
+.cta h2{margin-bottom:10px}
+.cta p{color:var(--muted);max-width:600px}
+.cta .links{margin-top:20px}
+.more{margin:48px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.more a{display:block;text-decoration:none;border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--surface)}
+.more a:hover{border-color:var(--accent)}
+.more b{display:block;font-family:var(--f-display);font-size:20px;margin-top:4px}
+.more small{display:block;color:var(--muted);font-size:14px;margin-top:4px;line-height:1.45}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{text-decoration:none}footer a:hover{color:var(--accent)}
+</style>
+</head>
+<body>
+<header class="nav"><div class="nav-in"><a class="mark" href="/">akhil<span>.</span>vallala</a><a class="hire" href="/#contact">Get in touch</a></div></header>
+<main class="wrap"><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">piiguard</li></ol></nav><header class="top"><div class="pills"><span class="pill hot">Winner · Best Use of NemoClaw &amp; OpenShell</span><span class="pill">Open source</span><span class="pill">Built solo in one day</span></div><h1><span class="name">piiguard</span>A PII leak guard for sandboxed AI agents that hardens itself.</h1><p class="lede">Sandboxes like NVIDIA OpenShell decide where an agent may send data, but not what is inside it. piiguard is the content layer that closes that gap, and it gets better on its own.</p><p class="context">Picked from 109 projects at the Recursive Agents Hackathon (Cerebral Valley, Crusoe, NVIDIA, You.com), San Francisco, October 2026. 65 commits, all written during the event.</p></header><div class="stats"><div class="stat"><b>76.7% → 16.7%</b><span>Held-out leak rate with rules alone, at 0% false positives</span></div><div class="stat"><b>0 / 30</b><span>Held-out attacks that leaked with the Nemotron 3.5 Lightning classifier on</span></div><div class="stat"><b>92.8%</b><span>Recall on structured identifiers in NVIDIA's Nemotron-PII set, vs 68.5% for Presidio</span></div><div class="stat"><b>90% → 20%</b><span>Held-out leaks on an insurance pack (adjuster badges, claim numbers)</span></div></div><section><h2>The problem</h2><p>An agent that is allowed to call a search API can paste a customer's SSN into the query, and the sandbox lets it through because the host is on the allow-list. Nobody broke a rule. The data still left.</p><p>Network policy answers <em>where</em>. Something has to answer <em>what</em>, without breaking the agent's task.</p></section><section><h2>How it works</h2><div class="flow"><span>agent in OpenShell</span><em>→</em><span>guard proxy</span><em>→</em><span>allowed API</span><em>→</em><span>restore tokens</span></div><div class="flow"><span>red team</span><em>→</em><span>coach</span><em>→</em><span>gate</span><em>→</em><span>git tag gen-N</span><em>↺</em></div><ol class="steps">
+<li><b>Guard proxy.</b> Sits between the agent and allowed egress. It swaps PII for reversible tokens before anything leaves the sandbox, then restores the real values in the response so the agent still finishes its job. Provider keys stay in the proxy.</li>
+<li><b>Red team.</b> Nemotron 3 Super on Crusoe, plus deterministic encoders, generates attacks that try to sneak PII past the guard: base64, hex, reversed strings, spelled-out digits, unicode tricks, and values split across lines.</li>
+<li><b>Coach.</b> Nemotron 3 Super reads what leaked and rewrites the guard's rules and the prompt for the Nemotron 3.5 Lightning span classifier.</li>
+<li><b>Gate.</b> A change is kept only if the validation leak rate drops and false positives don't rise. Accepted changes are committed and tagged <code>gen-N</code>; rejected ones are reverted and logged. A security reviewer reads a regex diff, not a black box.</li>
+<li><b>Score.</b> Leak rate is measured on a held-out attack set the coach never sees, comparing generation 0 with generation N.</li>
+</ol></section><section><h2>Results</h2><p>Held-out attacks (n = 30) that the coach never saw:</p><div class="table-wrap"><table>
+<thead><tr><th>System</th><th>Leak rate</th><th>False positives</th></tr></thead>
+<tbody>
+<tr><td>NemoClaw network policy only</td><td>100.0% (30/30)</td><td>n/a</td></tr>
+<tr><td>Presidio, default</td><td>53.3% (16/30)</td><td>64.0%</td></tr>
+<tr><td>Presidio, scoped</td><td>70.0% (21/30)</td><td>4.0%</td></tr>
+<tr><td>piiguard gen-0 rules</td><td>76.7% (23/30)</td><td>0.0%</td></tr>
+<tr><td>piiguard gen-14 rules</td><td>16.7% (5/30)</td><td>0.0%</td></tr>
+<tr class="win"><td>piiguard gen-14 rules + classifier</td><td>0.0% (0/30)</td><td>not reported</td></tr>
+</tbody></table></div><p>On NVIDIA's public Nemotron-PII dataset (290 records, 2,630 spans), the routed setup with an industry pack and classifier reached 92.8% recall on structured identifiers, against 68.5% for default Presidio.</p></section><section><h2>Design decisions</h2><ul class="points">
+<li><b>Reversible tokens, not deletion.</b> Redaction that breaks the agent's task gets turned off. Tokens keep the request useful and the values out of the third party.</li>
+<li><b>Improvement only behind a gate.</b> The coach can propose anything; only changes that lower leaks without raising false positives survive.</li>
+<li><b>Auditable generations.</b> Every accepted generation is a git tag, so rules can be reviewed, diffed, and rolled back.</li>
+<li><b>Pruning has to be free.</b> Removing 10 apparently dead rules raised held-out leaks from 16.7% to 26.7%, so that change was not committed.</li>
+<li><b>Shape memory.</b> A ledger of caught identifier shapes acts as a regression gate, so later generations can't quietly forget what earlier ones learned.</li>
+</ul></section><section><h2>Where it falls short</h2><ul class="points">
+<li>Presidio still leads on semantic PII like names and places, and on overall recall. Names are caught only when the classifier is on.</li>
+<li>The loop was tested against a synthetic red team, not production traffic.</li>
+<li>Single host with token auth; a team deployment needs a real identity layer. Streaming replies are converted rather than passed through.</li>
+<li>The OpenShell supervisor middleware path is a research preview, verified against the published proto rather than a running gateway.</li>
+</ul></section><section><h2>Stack</h2><ul class="stack"><li>Nemotron 3 Super</li><li>Nemotron 3.5 Lightning</li><li>Crusoe Managed Inference</li><li>NVIDIA NemoClaw</li><li>OpenShell</li><li>You.com search</li><li>Microsoft Presidio (baseline)</li><li>FastAPI</li><li>gRPC</li><li>Python 3.12</li><li>uv</li></ul></section><section><h2>Links</h2><div class="links"><a class="btn" href="https://github.com/Akhilvallala1/piiguard" target="_blank" rel="noopener">Repository ↗</a><a class="btn" href="https://youtube.com/watch?v=qMEf-XKlkFI" target="_blank" rel="noopener">Demo video ↗</a><a class="btn" href="https://www.linkedin.com/feed/update/urn:li:activity:7518062626044706816/" target="_blank" rel="noopener">Award post ↗</a></div></section><aside class="cta"><h2>Want this kind of work on your team?</h2><p>Akhil Vallala is a Lead Machine Learning Engineer who builds LLM systems, guardrails, and PII redaction for production. He is open to AI/ML roles, remote in the US or relocating.</p><div class="links"><a class="btn primary" href="/#contact">Get in touch</a><a class="btn" href="/">See all his work</a></div></aside><div class="more"><a href="/projects/agentshield/"><span class="label">Case study</span><b>AgentShield</b><small>A guardrail that learns new PII rules from its misses, and unlearns the ones that misfire.</small></a><a href="/projects/conduit/"><span class="label">Case study</span><b>Conduit</b><small>One gateway for every model call, routed by complexity and guarded both ways.</small></a></div></main><footer><div class="wrap"><span>© 2026 Akhil Vallala</span><span><a href="https://www.linkedin.com/in/akhil-fau/">LinkedIn</a> · <a href="https://github.com/Akhilvallala1">GitHub</a> · <a href="/">Home</a></span></div></footer>
+<script>(function(){try{if(location.hostname!=='akhilvallala1.github.io'||navigator.webdriver)return;var r='';try{r=document.referrer?new URL(document.referrer).hostname:'';}catch(e){}if(r===location.hostname)r='internal';var q='?hit=1&p='+encodeURIComponent(location.pathname)+'&r='+encodeURIComponent(r)+'&d='+(matchMedia('(max-width:700px)').matches?'m':'d');fetch('https://script.google.com/macros/s/AKfycbyt9oE-PQCyz0Us6n5eeQiDY-af2ZQlEoT6soJKZ8FMtInqwXN-NyztujyT-17qIZPA2w/exec'+q,{mode:'no-cors',keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>
